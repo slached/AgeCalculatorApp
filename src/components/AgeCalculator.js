@@ -21,6 +21,8 @@ export default function AgeCalculator() {
     const [monthDigits, setMonthDigits] = useState("- -")
     const [dayDigits, setDayDigits] = useState("- -")
 
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth)
+    const [isMobile, setIsMobile] = useState(false)
 
     const validateDate = require('validate-date')
 
@@ -39,7 +41,16 @@ export default function AgeCalculator() {
 
     }, [isThereError]);
 
-    const submitCheck = (e) => {
+    useEffect(() => {
+
+        window.addEventListener('resize', () => {
+            window.innerWidth > 640 ? setIsMobile(false) : setIsMobile(true)
+            setScreenWidth(window.innerWidth)
+        })
+
+    }, [screenWidth])
+
+    const submitCheck = () => {
 
         let error = 0
 
@@ -71,7 +82,6 @@ export default function AgeCalculator() {
             error++
         }
 
-
         if (yearInput.length === 0) {
             setErrorCodeOfYear("This field is required")
             setIsThereError(true)
@@ -88,10 +98,8 @@ export default function AgeCalculator() {
 
         }
 
-
         if (error === 3) {
-            let day = 0
-            let month = 0
+            let day, month
 
             if (dayInput.length === 1) {
                 setDayInput(`0${dayInput}`)
@@ -102,7 +110,10 @@ export default function AgeCalculator() {
                 month = `0${monthInput}`
             } else month = monthInput
 
-            if (validateDate(`${month}/${day}/${yearInput}`) === "Invalid Date") setErrorCodeOfDay("Must be a valid date")
+            if (validateDate(`${month}/${day}/${yearInput}`) === "Invalid Date") {
+                setErrorCodeOfDay("Must be a valid date")
+                setIsThereError(true)
+            }
             //no error condition
             else {
 
@@ -150,82 +161,100 @@ export default function AgeCalculator() {
 
     return <div>
         {/*Outer Centralizer*/}
-        <div className={"flex items-center justify-center min-h-screen"}>
-            {/*Main Structure*/}
+        <div className={"flex items-center justify-center min-h-screen bg-grey-background"}>
+            {/*Main Container*/}
             <div
                 style={{
-                    borderRadius: "1.5rem 1.5rem 170px 1.5rem"
+                    borderRadius: "1.5rem 1.5rem 120px 1.5rem"
+
                 }}
-                className={"flex flex-col gap-y-1 bg-white p-12 rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl"}>
+                className={"flex flex-col gap-y-5 bg-white px-2 py-8 sm:px-8 sm:gap-y-1 font-body"}>
+
                 {/*Upper input section*/}
-                <div className={"flex gap-x-3"}>
-                    <div className={"flex flex-col max-w-32 gap-y-3"}>
-                        <label style={{color: labelColor}} className={"text-xs font-bold"}
+                <div className={"flex gap-x-3 justify-center sm:justify-normal"}>
+                    <div className={"flex flex-col max-w-24 sm:max-w-32"}>
+                        <label style={{color: labelColor}} className={"tracking-widest text-sm font-semibold mb-1"}
                                htmlFor={"day"}>DAY</label>
                         <input
                             style={{
                                 border: borderColor
                             }}
-                            className={"border pl-3 py-1 leading-3 rounded focus:outline-none focus:ring-1 focus:ring-purple-500 font-semibold"}
-                            placeholder={"DD"} type={"text"}
+                            className={"border text-2xl sm:text-3xl pl-2 sm:pl-3 py-1 rounded focus:outline-none focus:ring-1 focus:ring-purple-500 font-semibold"}
+                            placeholder={"DD"}
+                            type={"text"}
                             id={"day"}
                             value={dayInput}
                             onChange={inputChangeListener}
                             maxLength={2}/>
-                        <div className={"text-xs text-red-600 italic"}>{errorCodeOfDay}</div>
+                        <div className={"text-xs text-red-600 italic mt-1"}>{errorCodeOfDay}</div>
 
                     </div>
-                    <div className={"flex flex-col max-w-32  gap-y-3"}>
-                        <label style={{color: labelColor}} className={"text-xs font-bold"}
+                    <div className={"flex flex-col max-w-24 sm:max-w-32"}>
+                        <label style={{color: labelColor}} className={"tracking-widest text-sm font-semibold mb-1"}
                                htmlFor={"month"}>MONTH</label>
                         <input
                             style={{
                                 border: borderColor
                             }}
-                            className={"border pl-3 py-1 rounded focus:outline-none focus:ring-1 focus:ring-purple-500 font-semibold"}
+                            className={"border text-2xl sm:text-3xl pl-2 sm:pl-3 py-1 rounded focus:outline-none focus:ring-1 focus:ring-purple-500 font-semibold"}
                             placeholder={"MM"} type={"text"}
                             id={"month"}
                             value={monthInput}
                             onChange={inputChangeListener}
                             maxLength={2}/>
 
-                        <div className={"text-xs text-red-600 italic"}>{errorCodeOfMonth}</div>
+                        <div className={"text-xs text-red-600 italic mt-1"}>{errorCodeOfMonth}</div>
                     </div>
-                    <div className={"flex flex-col max-w-32  gap-y-3"}>
-                        <label style={{color: labelColor}} className={"text-xs font-bold"}
+                    <div className={"flex flex-col max-w-24 sm:max-w-32"}>
+                        <label style={{color: labelColor}} className={"tracking-widest text-sm font-semibold mb-1"}
                                htmlFor={"year"}>YEAR</label>
                         <input
                             style={{
                                 border: borderColor
                             }}
-                            className={"border pl-3 py-1 rounded focus:outline-none focus:ring-1 focus:ring-purple-500 font-semibold"}
+                            className={"border text-2xl sm:text-3xl pl-2 sm:pl-3 py-1 rounded focus:outline-none focus:ring-1 focus:ring-purple-500 font-semibold"}
                             placeholder={"YYYY"} type={"text"}
                             id={"year"}
                             value={yearInput}
                             onChange={inputChangeListener}
                             maxLength={4}/>
-                        <div className={"text-xs text-red-600 italic"}>{errorCodeOfYear}</div>
+                        <div className={"text-xs text-red-600 italic mt-1"}>{errorCodeOfYear}</div>
 
                     </div>
                 </div>
-                {/*Middle button section*/}
-                <div className={"flex items-center"}>
-                    <hr style={{minWidth: "450px"}} className={"grow"}/>
-                    <button type={"submit"} onClick={submitCheck} id={"clicker"} className={"rounded-full p-4"}>
-                        <img className={"w-8"} alt={"btn"} src={iconArrow}/>
-                    </button>
+
+                {/*Middle button section first for mobile second for 1440p*/}
+                <div>
+                    {isMobile ?
+                        <div className={"flex items-center justify-center"}>
+                            <hr style={{maxWidth: "150px"}} className={"grow"}/>
+                            <button type={"submit"} onClick={submitCheck} id={"clicker"}
+                                    className={"rounded-full p-4 bg-purple-button active:bg-black"}>
+                                <img className={"w-8"} alt={"btn"} src={iconArrow}/>
+                            </button>
+                            <hr style={{maxWidth: "150px"}} className={"grow"}/>
+                        </div>
+                        :
+                        <div className={"flex items-center"}>
+                            <hr style={{minWidth: "500px"}} className={"grow"}/>
+                            <button type={"submit"} onClick={submitCheck} id={"clicker"}
+                                    className={"rounded-full p-4 mr-2 bg-purple-button active:bg-black"}>
+                                <img className={"w-8"} alt={"btn"} src={iconArrow}/>
+                            </button>
+                        </div>}
                 </div>
+
                 {/*Below age section*/}
-                <div className={"flex flex-col gap-y-3"}>
-                    <div className={"flex gap-x-3 text-6xl font-extrabold italic"}>
+                <div className={"flex flex-col gap-y-2 my-4 ms-3"}>
+                    <div className={"flex gap-x-3 text-6xl sm:text-7xl font-extrabold italic"}>
                         <div style={{color: "hsl(259, 100%, 65%)"}}>{yearDigits}</div>
                         <div>years</div>
                     </div>
-                    <div className={"flex gap-x-3 text-6xl font-extrabold italic"}>
+                    <div className={"flex gap-x-3 text-6xl sm:text-7xl font-extrabold italic"}>
                         <div style={{color: "hsl(259, 100%, 65%)"}}>{monthDigits}</div>
                         <div>months</div>
                     </div>
-                    <div className={"flex gap-x-3 text-6xl font-extrabold italic"}>
+                    <div className={"flex gap-x-3 text-6xl sm:text-7xl font-extrabold italic"}>
                         <div style={{color: "hsl(259, 100%, 65%)"}}>{dayDigits}</div>
                         <div>days</div>
                     </div>
